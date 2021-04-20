@@ -1,8 +1,8 @@
 {
-	"name": "unit-factory",
-	"author": "DeltaNedas",
-	"displayName": "[coral]Unit [gray]Factory",
-	"description": "Spawn any enemy in sandbox or on multiplayer, with [stat]/js[] (if supported).\n[stat]Requires [#00aaff]DeltaNedas/ui-lib[].",
+	"name": "Pointer",
+	"author": "Juan",
+	"displayName": "[coral]Pointer",
+	"description": "",
 	"dependencies": ["ui-lib"],
 	"version": "2.4.2",
 	"hidden": true,
