@@ -159,9 +159,6 @@ ui.addButton("unit-factory", spawning, () => {
 			Vars.ui.showInfoToast("You egg that would desync", 5);
 			return;
 		}
-	} else if (Vars.state.rules.sector) {
-		Vars.ui.showInfoToast("No cheating! [red]*slaps hand*", 5);
-		return;
 	}
 
 	dialog.show();
