@@ -28,102 +28,10 @@ var team = Vars.state.rules.waveTeam;
 // Default 2 tiles of random to the unit position
 var rand = 2;
 
-// Singleplayer, directly spawn the units
-function spawnLocal() {
-	for (var n = 0; n < count; n++) {
-		Tmp.v1.rnd(Mathf.random(rand * Vars.tilesize));
-
-		var unit = spawning.create(team);
-		unit.set(pos.x + Tmp.v1.x, pos.y + Tmp.v1.y);
-		unit.add();
-	}
-}
-
-// Multiplayer, compile a function to send with /js, good for nydus and other abusive servers
-function spawnRemote() {
-	// TODO
-	const unitcode = "UnitTypes." + spawning.name;
-	const teamcode = "Team." + team.name;
-
-	const code = [
-		// loop optimisation
-		(count ? "for(var n=0;n<" + count + ";n++){" : ""),
-			"Tmp.v1.rnd(" + Mathf.random(rand * Vars.tilesize) + ");",
-			"var u=" + unitcode + ".create(" + teamcode + ");",
-			"u.set(" + pos.x + "+Tmp.v1.x," + pos.y + "+Tmp.v1.y);",
-			"u.add()",
-		(count ? "}" : "")
-	].join("");
-
-	Call.sendChatMessage("/js " + code);
-}
-
-function spawn() {
-	(Vars.net.client() ? spawnRemote : spawnLocal)();
-}
-
 ui.onLoad(() => {
 	dialog = new BaseDialog("$unit-factory");
 	const table = dialog.cont;
 
-	/* Unit */
-	table.label(() => spawning.localizedName);
-	table.row();
-
-	/* Unit selection */
-	table.pane(list => {
-		const units = Vars.content.units();
-		units.sort();
-		var i = 0;
-		units.each(unit => {
-			// Block "unit" for payloads
-			if (unit.isHidden()) return;
-
-			if (i++ % 4 == 0) {
-				list.row();
-			}
-
-			const icon = new TextureRegionDrawable(unit.icon(Cicon.full));
-			list.button(icon, () => {
-				spawning = unit;
-				button.style.imageUp = icon;
-			}).size(128);
-		});
-	}).top().center();
-	table.row();
-
-	/* Random selection */
-	const r = table.table().center().bottom().get();
-	var rSlider, rField;
-	r.defaults().left();
-	rSlider = r.slider(0, maxRand, 0.125, rand, n => {
-		rand = n;
-		rField.text = n;
-	}).get();
-	r.add("Randomness: ");
-	rField = r.field("" + rand, text => {
-		rand = parseInt(text);
-		rSlider.value = rand;
-	}).get();
-	rField.validator = text => !isNaN(parseInt(text));
-	table.row();
-    
-	/* Count selection */
-	const t = table.table().center().bottom().get();
-	var cSlider, cField;
-	t.defaults().left();
-	cSlider = t.slider(1, maxCount, count, n => {
-		count = n;
-		cField.text = n;
-	}).get();
-	t.add("Count: ");
-	cField = t.field("" + count, text => {
-		count = parseInt(text);
-		cSlider.value = count;
-	}).get();
-	cField.validator = text => !isNaN(parseInt(text));
-
-	table.row();
 	var posb;
 	posb = table.button("Set Position", () => {
 		dialog.hide();
@@ -140,17 +48,7 @@ ui.onLoad(() => {
 
 	/* Buttons */
 	dialog.addCloseButton();
-	dialog.buttons.button("$unit-factory.spawn", Icon.modeAttack, spawn)
-		.disabled(() => !Vars.world.passable(pos.x / 8, pos.y / 8));
-
-	const teamRect = extend(TextureRegionDrawable, Tex.whiteui, {});
-	teamRect.tint.set(team.color);
-	dialog.buttons.button("$unit-factory.set-team", teamRect, 40, () => {
-		ui.select("$unit-factory.set-team", Team.baseTeams, t => {
-			team = t;
-			teamRect.tint.set(team.color);
-		}, (i, t) => "[#" + t.color + "]" + t);
-	});
+	
 });
 
 ui.addButton("unit-factory", spawning, () => {
