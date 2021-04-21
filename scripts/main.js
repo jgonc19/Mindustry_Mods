@@ -33,12 +33,12 @@ ui.onLoad(() => {
 	const table = dialog.cont;
 
 	var posb;
-	posb = table.button("Set Position", () => {
+	posb = table.button("Get coordinates", () => {
 		dialog.hide();
 		ui.click((screen, world) => {
 			// We don't need sub-wu precision + make /js output nicer
 			pos.set(Math.round(world.x), Math.round(world.y));
-			posb.getLabel().text = "Spawn at " + Math.round(pos.x / 8)
+			posb.getLabel().text = "Clicked at " + Math.round(pos.x / 8)
 				+ ", " + Math.round(pos.y / 8);
 			dialog.show();
 		}, true);
